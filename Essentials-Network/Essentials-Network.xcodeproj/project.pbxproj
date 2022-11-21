@@ -8,8 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		922FB80029290AAE00AE5E4C /* RemoteFeedLoaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 922FB7FF29290AAE00AE5E4C /* RemoteFeedLoaderTests.swift */; };
+		92BBC778292BB8600084E352 /* RemoteFeedLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92BBC777292BB8600084E352 /* RemoteFeedLoader.swift */; };
 		92F973D6292294E400F59D3F /* Essentials_Network.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 92F973CD292294E400F59D3F /* Essentials_Network.framework */; };
-		92F973DB292294E400F59D3F /* Essentials_NetworkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92F973DA292294E400F59D3F /* Essentials_NetworkTests.swift */; };
 		92F973DC292294E400F59D3F /* Essentials_Network.h in Headers */ = {isa = PBXBuildFile; fileRef = 92F973D0292294E400F59D3F /* Essentials_Network.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		92F973E92922958300F59D3F /* FeedLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92F973E72922958300F59D3F /* FeedLoader.swift */; };
 		92F973EA2922958300F59D3F /* FeedItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92F973E82922958300F59D3F /* FeedItem.swift */; };
@@ -27,10 +27,10 @@
 
 /* Begin PBXFileReference section */
 		922FB7FF29290AAE00AE5E4C /* RemoteFeedLoaderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteFeedLoaderTests.swift; sourceTree = "<group>"; };
+		92BBC777292BB8600084E352 /* RemoteFeedLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteFeedLoader.swift; sourceTree = "<group>"; };
 		92F973CD292294E400F59D3F /* Essentials_Network.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Essentials_Network.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		92F973D0292294E400F59D3F /* Essentials_Network.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Essentials_Network.h; sourceTree = "<group>"; };
 		92F973D5292294E400F59D3F /* Essentials-NetworkTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Essentials-NetworkTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		92F973DA292294E400F59D3F /* Essentials_NetworkTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Essentials_NetworkTests.swift; sourceTree = "<group>"; };
 		92F973E72922958300F59D3F /* FeedLoader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeedLoader.swift; sourceTree = "<group>"; };
 		92F973E82922958300F59D3F /* FeedItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeedItem.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -54,6 +54,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		92BBC776292BB84A0084E352 /* FeedAPI */ = {
+			isa = PBXGroup;
+			children = (
+				92BBC777292BB8600084E352 /* RemoteFeedLoader.swift */,
+			);
+			path = FeedAPI;
+			sourceTree = "<group>";
+		};
 		92F973C3292294E400F59D3F = {
 			isa = PBXGroup;
 			children = (
@@ -85,7 +93,6 @@
 			isa = PBXGroup;
 			children = (
 				922FB7FF29290AAE00AE5E4C /* RemoteFeedLoaderTests.swift */,
-				92F973DA292294E400F59D3F /* Essentials_NetworkTests.swift */,
 			);
 			path = "Essentials-NetworkTests";
 			sourceTree = "<group>";
@@ -94,6 +101,7 @@
 			isa = PBXGroup;
 			children = (
 				92F973EB2922959700F59D3F /* FeedFeature */,
+				92BBC776292BB84A0084E352 /* FeedAPI */,
 			);
 			path = EssentialsFeed;
 			sourceTree = "<group>";
@@ -226,6 +234,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				92F973EA2922958300F59D3F /* FeedItem.swift in Sources */,
+				92BBC778292BB8600084E352 /* RemoteFeedLoader.swift in Sources */,
 				92F973E92922958300F59D3F /* FeedLoader.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -235,7 +244,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				922FB80029290AAE00AE5E4C /* RemoteFeedLoaderTests.swift in Sources */,
-				92F973DB292294E400F59D3F /* Essentials_NetworkTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
