@@ -46,6 +46,7 @@ final class RemoteFeedLoaderTests: XCTestCase {
         })
     }
     
+    // This was a request in the user story
     func test_load_deliversErrorOnNon200HTTPResponse() {
         let (sut, client) = makeSUT()
         
@@ -119,12 +120,12 @@ private extension RemoteFeedLoaderTests {
                 toCompleteWithError error: RemoteFeedLoader.Error,
                 when action: () -> Void,
                 file: StaticString = #filePath, line: UInt = #line) {
-        var capturedErrors: [RemoteFeedLoader.Error?] = []
+        var capturedResults: [RemoteFeedLoader.Result?] = []
         sut.load { capturedErrors.append($0) }
         
         action()
         
-        XCTAssertEqual(capturedErrors, [error], file: file, line: line)
+        XCTAssertEqual(capturedErrors, [.failure(error)], file: file, line: line)
     }
     
     // MARK: Stubs
