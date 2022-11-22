@@ -39,7 +39,7 @@ final class RemoteFeedLoaderTests: XCTestCase {
         let (sut, client) = makeSUT()
         
         expect(sut,
-               toCompleteWithError: .connectivity,
+               toCompleteWithResut: .failure(.connectivity),
                when: {
             let clientError = NSError(domain: "Test", code: 0)
             client.complete(with: clientError)
@@ -54,7 +54,7 @@ final class RemoteFeedLoaderTests: XCTestCase {
         
         samples.enumerated().forEach { index, code in
             expect(sut,
-                   toCompleteWithError: .invalidData,
+                   toCompleteWithResut: .failure(.invalidData),
                    when: {
                 client.complete(withStatusCode: code, at: index)
             })
@@ -65,7 +65,7 @@ final class RemoteFeedLoaderTests: XCTestCase {
         let (sut, client) = makeSUT()
         
         expect(sut,
-               toCompleteWithError: .invalidData,
+               toCompleteWithResut: .failure(.invalidData),
                when: {
             let invalidJSON = invalidJSON()
             client.complete(withStatusCode: 200, data: invalidJSON)
@@ -75,13 +75,12 @@ final class RemoteFeedLoaderTests: XCTestCase {
     func test_load_Success_whenHTTPResponseIs200AndEmptyJson() {
         let (sut, client) = makeSUT()
         
-        var capturedResults: [RemoteFeedLoader.Result?] = []
-        sut.load { capturedResults.append($0) }
-        
-        let emptyJSON = emptyItemsJSON()
-        client.complete(withStatusCode: 200, data: emptyJSON)
-        
-        XCTAssertEqual(capturedResults, [.success([])])
+        expect(sut,
+               toCompleteWithResut: .success([]),
+               when: {
+            let emptyJSON = emptyItemsJSON()
+            client.complete(withStatusCode: 200, data: emptyJSON)
+        })
     }
 }
 
@@ -129,7 +128,7 @@ private extension RemoteFeedLoaderTests {
     }
     
     func expect(_ sut: RemoteFeedLoader,
-                toCompleteWithError error: RemoteFeedLoader.Error,
+                toCompleteWithResut result: RemoteFeedLoader.Result,
                 when action: () -> Void,
                 file: StaticString = #filePath, line: UInt = #line) {
         var capturedResults: [RemoteFeedLoader.Result?] = []
@@ -137,7 +136,7 @@ private extension RemoteFeedLoaderTests {
         
         action()
         
-        XCTAssertEqual(capturedResults, [.failure(error)], file: file, line: line)
+        XCTAssertEqual(capturedResults, [result], file: file, line: line)
     }
     
     // MARK: Stubs
