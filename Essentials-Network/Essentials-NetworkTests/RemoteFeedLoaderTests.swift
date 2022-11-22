@@ -62,6 +62,18 @@ final class RemoteFeedLoaderTests: XCTestCase {
             XCTAssertEqual(capturedErrors, [.invalidData])
         }
     }
+    
+    func test_load_whenHTTPResponseIs200_deliversError() {
+        let (sut, client) = makeSUT()
+        var capturedErrors: [RemoteFeedLoader.Error?] = []
+        let invalidJSON = invalidJSON()
+        
+        sut.load { capturedErrors.append($0) }
+        
+        client.complete(withStatusCode: 200, data: invalidJSON)
+        
+        XCTAssertEqual(capturedErrors, [.invalidData])
+    }
 }
 
 // MARK: - Helpers
@@ -85,13 +97,15 @@ private extension RemoteFeedLoaderTests {
             messages[index].completion(.failure(error))
         }
         
-        func complete(withStatusCode code: Int, at index: Int = 0) {
+        func complete(withStatusCode code: Int,
+                      data: Data = Data(),
+                      at index: Int = 0) {
             let response = HTTPURLResponse(url: requestedURLs[index],
                                            statusCode: code,
                                            httpVersion: nil,
                                            headerFields: nil)!
             
-            messages[index].completion(.success(response))
+            messages[index].completion(.success((data, response)))
         }
     }
     
@@ -106,5 +120,9 @@ private extension RemoteFeedLoaderTests {
     // TODO: why you can't use anyURL as default paramether?
     func anyURL() -> URL {
         URL(string: "a-url.com")!
+    }
+    
+    func invalidJSON() -> Data {
+        Data("invalid json".utf8)
     }
 }
