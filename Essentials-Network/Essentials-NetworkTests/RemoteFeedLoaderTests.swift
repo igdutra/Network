@@ -121,11 +121,11 @@ private extension RemoteFeedLoaderTests {
                 when action: () -> Void,
                 file: StaticString = #filePath, line: UInt = #line) {
         var capturedResults: [RemoteFeedLoader.Result?] = []
-        sut.load { capturedErrors.append($0) }
+        sut.load { capturedResults.append($0) }
         
         action()
         
-        XCTAssertEqual(capturedErrors, [.failure(error)], file: file, line: line)
+        XCTAssertEqual(capturedResults, [.failure(error)], file: file, line: line)
     }
     
     // MARK: Stubs
