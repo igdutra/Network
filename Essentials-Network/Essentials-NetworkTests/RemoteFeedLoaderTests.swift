@@ -71,6 +71,18 @@ final class RemoteFeedLoaderTests: XCTestCase {
             client.complete(withStatusCode: 200, data: invalidJSON)
         })
     }
+    
+    func test_load_Success_whenHTTPResponseIs200AndEmptyJson() {
+        let (sut, client) = makeSUT()
+        
+        var capturedResults: [RemoteFeedLoader.Result?] = []
+        sut.load { capturedResults.append($0) }
+        
+        let emptyJSON = emptyItemsJSON()
+        client.complete(withStatusCode: 200, data: emptyJSON)
+        
+        XCTAssertEqual(capturedResults, [.success([])])
+    }
 }
 
 // MARK: - Spy
@@ -137,5 +149,9 @@ private extension RemoteFeedLoaderTests {
     
     func invalidJSON() -> Data {
         Data("invalid json".utf8)
+    }
+    
+    func emptyItemsJSON() -> Data {
+        Data("{\"items\": []}".utf8)
     }
 }
