@@ -82,6 +82,41 @@ final class RemoteFeedLoaderTests: XCTestCase {
             client.complete(withStatusCode: 200, data: emptyJSON)
         })
     }
+    
+    func test_load_whenHTTPResponseIs200_deliversItemsArray() {
+        let (sut, client) = makeSUT()
+        
+        let item1 = FeedItem(id: UUID(),
+                            description: "A description",
+                            location: "A location",
+                            imageURL: anyURL())
+        
+        let item2 = FeedItem(id: UUID(),
+                            imageURL: anyURL("anotherURL"))
+        
+        let item1JSON = [
+            "id": item1.id.uuidString,
+            "description": item1.description,
+            "location": item1.location,
+            "image": item1.imageURL.absoluteString
+        ]
+        
+        let item2JSON = [
+            "id": item2.id.uuidString,
+            "image": item2.imageURL.absoluteString
+        ]
+        
+        let finalJSON = [
+            "items": [item1JSON, item2JSON]
+        ]
+        
+        expect(sut,
+               toCompleteWithResut: .success([item1, item2]),
+               when: {
+            let json = try! JSONSerialization.data(withJSONObject: finalJSON)
+            client.complete(withStatusCode: 200, data: json)
+        })
+    }
 }
 
 // MARK: - Spy
@@ -142,8 +177,8 @@ private extension RemoteFeedLoaderTests {
     // MARK: Stubs
     
     // TODO: why you can't use anyURL as default paramether?
-    func anyURL() -> URL {
-        URL(string: "a-url.com")!
+    func anyURL(_ differentText: String = "a-url") -> URL {
+        URL(string: differentText + ".com")!
     }
     
     func invalidJSON() -> Data {
