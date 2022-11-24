@@ -35,31 +35,15 @@ public final class RemoteFeedLoader {
         client.get(from: url) { result in
             switch result {
             case .success((let data, let response)):
-                if response.statusCode == 200,
-                   let feed = try? JSONDecoder().decode(Feed.self, from: data) {
-                    completion(.success(feed.items.map { $0.item }))
-                } else {
+                do {
+                    let items = try FeedItemsMapper.map(data, response)
+                    completion(.success(items))
+                } catch {
                     completion(.failure(.invalidData))
                 }
             case .failure:
                 completion(.failure(.connectivity))
             }
         }
-    }
-}
-
-private struct Feed: Decodable {
-    let items: [Item]
-}
-
-/// This is done in order to: the API DETAILS ARE PRIVATE, separated from the FeedLoader protocol
-private struct Item: Decodable {
-    let id: UUID
-    let description: String?
-    let location: String?
-    let image: URL
-    
-    var item: FeedItem {
-        FeedItem(id: id, description: description, location: location, imageURL: image)
     }
 }
