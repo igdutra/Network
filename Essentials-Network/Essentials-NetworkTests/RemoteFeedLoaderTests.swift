@@ -79,7 +79,7 @@ final class RemoteFeedLoaderTests: XCTestCase {
         expect(sut,
                toCompleteWithResut: .success([]),
                when: {
-            let emptyJSON = emptyItemsJSON()
+            let emptyJSON = makeFeed(items: [])
             client.complete(withStatusCode: 200, data: emptyJSON)
         })
     }
@@ -182,10 +182,6 @@ private extension RemoteFeedLoaderTests {
     
     func invalidJSON() -> Data {
         Data("invalid json".utf8)
-    }
-    
-    func emptyItemsJSON() -> Data {
-        Data("{\"items\": []}".utf8)
     }
     
     func emptyJSON() -> Data {
