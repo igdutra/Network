@@ -86,35 +86,15 @@ final class RemoteFeedLoaderTests: XCTestCase {
     func test_load_whenHTTPResponseIs200_deliversItemsArray() {
         let (sut, client) = makeSUT()
         
-        let item1 = FeedItem(id: UUID(),
-                            description: "A description",
-                            location: "A location",
-                            imageURL: anyURL())
-        
-        let item2 = FeedItem(id: UUID(),
-                            imageURL: anyURL("anotherURL"))
-        
-        let item1JSON = [
-            "id": item1.id.uuidString,
-            "description": item1.description,
-            "location": item1.location,
-            "image": item1.imageURL.absoluteString
-        ]
-        
-        let item2JSON = [
-            "id": item2.id.uuidString,
-            "image": item2.imageURL.absoluteString
-        ]
-        
-        let finalJSON = [
-            "items": [item1JSON, item2JSON]
-        ]
+        let item1 = makeItem(id: UUID(), description: "A description", location: "A location", imageURL: anyURL())
+        let item2 = makeItem(id:  UUID(), imageURL: anyURL("anotherURL"))
+        let items = [item1.model, item2.model]
         
         expect(sut,
-               toCompleteWithResut: .success([item1, item2]),
+               toCompleteWithResut: .success(items),
                when: {
-            let json = try! JSONSerialization.data(withJSONObject: finalJSON)
-            client.complete(withStatusCode: 200, data: json)
+            let finalJSON = makeFeed(items: [item1.json, item2.json])
+            client.complete(withStatusCode: 200, data: finalJSON)
         })
     }
 }
@@ -175,6 +155,24 @@ private extension RemoteFeedLoaderTests {
     }
     
     // MARK: Stubs
+    
+    func makeItem(id: UUID, description: String? = nil, location: String? = nil, imageURL: URL) -> (model: FeedItem, json: [String: Any]) {
+        let item = FeedItem(id: id, description: description, location: location, imageURL: imageURL)
+        
+        let itemJSON = [
+            "id": item.id.uuidString,
+            "description": item.description,
+            "location": item.location,
+            "image": item.imageURL.absoluteString
+        ].compactMapValues { $0 }
+        
+        return (item, itemJSON)
+    }
+    
+    func makeFeed(items: [[String: Any]]) -> Data {
+        let feed = ["items": items]
+        return try! JSONSerialization.data(withJSONObject: feed)
+    }
     
     // TODO: why you can't use anyURL as default paramether?
     func anyURL(_ differentText: String = "a-url") -> URL {
