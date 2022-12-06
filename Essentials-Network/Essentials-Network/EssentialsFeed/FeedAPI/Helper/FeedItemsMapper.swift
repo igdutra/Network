@@ -7,9 +7,8 @@
 
 import Foundation
 
-
-
-struct FeedItemsMapper {
+// 1 - I forgt to make it internal
+internal struct FeedItemsMapper {
     
     private struct Feed: Decodable {
         let items: [Item]
@@ -27,9 +26,9 @@ struct FeedItemsMapper {
         }
     }
     
-    static var OK_200: Int { 200 }
+    private static var OK_200: Int { 200 }
     
-    static func map(_ data: Data, _ response: HTTPURLResponse) throws -> [FeedItem] {
+    internal static func map(_ data: Data, _ response: HTTPURLResponse) throws -> [FeedItem] {
         guard response.statusCode == OK_200 else {
             throw RemoteFeedLoader.Error.invalidData
         }
