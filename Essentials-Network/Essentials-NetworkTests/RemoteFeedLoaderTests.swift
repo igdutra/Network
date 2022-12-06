@@ -98,6 +98,25 @@ final class RemoteFeedLoaderTests: XCTestCase {
             client.complete(withStatusCode: 200, data: finalJSON)
         })
     }
+    
+    // Instances are deallocated and some strange behavior starts to happen.
+    // This test is to documment the guard self != nil else { return }
+    func test_load_doesNotDeliverResultAfterSUTInstanceHasBeenDeallocated() {
+        let url = anyURL()
+        // Make SUT has teardown block and sut is not optional
+        let client = HTTPClientSpy()
+        var sut: RemoteFeedLoader? = RemoteFeedLoader(url: url, client: client)
+        
+        var capturedResults: [RemoteFeedLoader.Result?] = []
+        sut?.load { capturedResults.append($0) }
+        
+        sut = nil
+        client.complete(withStatusCode: 20, data: emptyJSON())
+        
+        print(capturedResults)
+        
+        XCTAssertTrue(capturedResults.isEmpty)
+    }
 }
 
 // MARK: - Spy
