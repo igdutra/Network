@@ -39,7 +39,7 @@ final class RemoteFeedLoaderTests: XCTestCase {
         let (sut, client) = makeSUT()
         
         expect(sut,
-               toCompleteWithResut: .failure(RemoteFeedLoader.Error.connectivity),
+               toCompleteWithResut: failure(.connectivity),
                when: {
             let clientError = NSError(domain: "Test", code: 0)
             client.complete(with: clientError)
@@ -54,7 +54,7 @@ final class RemoteFeedLoaderTests: XCTestCase {
         
         samples.enumerated().forEach { index, code in
             expect(sut,
-                   toCompleteWithResut: .failure(RemoteFeedLoader.Error.invalidData),
+                   toCompleteWithResut: failure(.invalidData),
                    when: {
                 let json = emptyJSON()
                 client.complete(withStatusCode: code, data: json, at: index)
@@ -66,7 +66,7 @@ final class RemoteFeedLoaderTests: XCTestCase {
         let (sut, client) = makeSUT()
         
         expect(sut,
-               toCompleteWithResut: .failure(RemoteFeedLoader.Error.invalidData),
+               toCompleteWithResut: failure(.invalidData),
                when: {
             let invalidJSON = invalidJSON()
             client.complete(withStatusCode: 200, data: invalidJSON)
@@ -157,6 +157,10 @@ private extension RemoteFeedLoaderTests {
         addTeardownBlock { [weak instance] in
             XCTAssertNil(instance, "Instance should have been deallocated. Potential memory leak.", file: file, line: line)
         }
+    }
+    
+    private func failure(_ error: RemoteFeedLoader.Error) -> RemoteFeedLoader.Result {
+        .failure(error)
     }
     
     // MARK: Factories
