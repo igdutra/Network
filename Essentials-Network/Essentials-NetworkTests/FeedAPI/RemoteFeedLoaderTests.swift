@@ -173,15 +173,30 @@ private extension RemoteFeedLoaderTests {
     }
     
     func expect(_ sut: RemoteFeedLoader,
-                toCompleteWithResut result: RemoteFeedLoader.Result,
+                toCompleteWithResut expectedResult: RemoteFeedLoader.Result,
                 when action: () -> Void,
                 file: StaticString = #filePath, line: UInt = #line) {
-        var capturedResults: [RemoteFeedLoader.Result?] = []
-        sut.load { capturedResults.append($0) }
+        let exp = expectation(description: "Wait for load completion")
+        
+        sut.load { receivedResult in
+            switch (receivedResult, expectedResult) {
+            case (.success(let receivedItems), .success(let expectedItems)):
+                print()
+                XCTAssertEqual(receivedItems, expectedItems, file: file, line: line)
+            case (.failure(let receivedError), .failure(let expectedError)):
+                XCTAssertEqual(receivedError, expectedError, file: file, line: line)
+                
+            default:
+                XCTFail("test")
+                
+            }
+            
+            exp.fulfill()
+        }
         
         action()
         
-        XCTAssertEqual(capturedResults, [result], file: file, line: line)
+        wait(for: [exp], timeout: 1.0)
     }
     
     // MARK: Stubs
