@@ -7,18 +7,6 @@
 
 import Foundation
 
-//public enum LoadFeedResult {
-//    case success([FeedItem])
-//    case error(Error)
-//}
-
-//public enum LoadFeedResult {
-//    case success([FeedItem])
-//    case failure(Error)
-//}
-
-//extension LoadFeedResult: Equatable where Error: Equatable { }
-
 public typealias LoadFeedResult = Result<[FeedItem], Error>
 
 public protocol FeedLoader {
