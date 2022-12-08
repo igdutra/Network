@@ -30,7 +30,7 @@ final class URLSessionHTTPClientTests: XCTestCase {
         URLProtocolStub.startInterceptingRequests()
         let anyURl = anyURL()
         let anyError = anyError()
-        URLProtocolStub.stub(url: anyURl, error: anyError)
+        URLProtocolStub.stub(url: anyURl, data: nil, response: nil, error: anyError)
         let exp = expectation(description: "Wait")
         let sut = URLSessionHTTPClient()
         
@@ -56,11 +56,13 @@ private extension URLSessionHTTPClientTests {
         private static var stubs = [URL: Stub]()
         
         struct Stub {
+            var data: Data?
+            var response: URLResponse?
             var error: Error?
         }
         
-        static func stub(url: URL, error: Error? = nil) {
-            stubs[url] = Stub(error: error)
+        static func stub(url: URL, data: Data?, response: URLResponse?, error: Error? = nil) {
+            stubs[url] = Stub(data: data, response: response, error: error)
         }
         
         static func startInterceptingRequests() {
@@ -85,6 +87,14 @@ private extension URLSessionHTTPClientTests {
         // The startLoading() method will be called when we need to do our loading, and is where we’ll return some test data immediately.
         override func startLoading() {
             guard let url = request.url, let stub = URLProtocolStub.stubs[url] else { return }
+            
+            if let data = stub.data {
+                client?.urlProtocol(self, didLoad: data)
+            }
+            
+            if let response = stub.response {
+                client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+            }
             
             if let error = stub.error {
                 client?.urlProtocol(self, didFailWithError: error)
