@@ -141,17 +141,11 @@ private extension URLSessionHTTPClientTests {
 // MARK: - Helpers
 private extension URLSessionHTTPClientTests {
     
-    func trackforMemoryLeaks(_ instance: AnyObject, file: StaticString = #file, line: UInt = #line) {
-        addTeardownBlock { [weak instance] in
-            XCTAssertNil(instance, "Instance should have been deallocated. Potential memory leak.", file: file, line: line)
-        }
-    }
-    
     // MARK: Factories
     func makeSUT(file: StaticString = #file, line: UInt = #line) -> URLSessionHTTPClient {
         let sut = URLSessionHTTPClient()
         
-        trackforMemoryLeaks(sut, file: file, line: line)
+        trackForMemoryLeaks(sut, file: file, line: line)
         
         return sut
     }
