@@ -38,7 +38,8 @@ final class URLSessionHTTPClientTests: XCTestCase {
     
     func test_getFromURL_performsGETRequestWithURL() {
         let anyURL = anyURL()
-        let sut = URLSessionHTTPClient()
+        let sut = makeSUT()
+        
         let exp = expectation(description: "Wait for request")
         
         URLProtocolStub.observeRequests { request in
@@ -56,8 +57,9 @@ final class URLSessionHTTPClientTests: XCTestCase {
         let anyURl = anyURL()
         let anyError = anyError()
         URLProtocolStub.stub(data: nil, response: nil, error: anyError)
+        let sut = makeSUT()
+        
         let exp = expectation(description: "Wait")
-        let sut = URLSessionHTTPClient()
         
         sut.get(from: anyURl) { result in
             switch result {
@@ -138,6 +140,11 @@ private extension URLSessionHTTPClientTests {
 
 // MARK: - Helpers
 private extension URLSessionHTTPClientTests {
+    
+    // MARK: Factories
+    func makeSUT() -> URLSessionHTTPClient {
+        URLSessionHTTPClient()
+    }
     
     // MARK: Stubs
     // TODO: why you can't use anyURL as default paramether?
