@@ -37,7 +37,6 @@ final class URLSessionHTTPClientTests: XCTestCase {
     }
     
     func test_getFromURL_performsGETRequestWithURL() {
-        URLProtocolStub.startInterceptingRequests()
         let anyURL = anyURL()
         let sut = URLSessionHTTPClient()
         let exp = expectation(description: "Wait for request")
@@ -51,11 +50,9 @@ final class URLSessionHTTPClientTests: XCTestCase {
         sut.get(from: anyURL) { _ in }
         
         wait(for: [exp], timeout: 1.0)
-       
     }
     
     func test_getFromURL_deliversError() {
-        URLProtocolStub.startInterceptingRequests()
         let anyURl = anyURL()
         let anyError = anyError()
         URLProtocolStub.stub(data: nil, response: nil, error: anyError)
@@ -74,7 +71,6 @@ final class URLSessionHTTPClientTests: XCTestCase {
         }
         
         wait(for: [exp], timeout: 1.0)
-        URLProtocolStub.stopInterceptingRequests()
     }
 }
 
