@@ -8,10 +8,18 @@
 import XCTest
 import Essentials_Network
 
+protocol HTTPSession {
+     func dataTask(with url: URL, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) -> HTTPSessionTask
+ }
+
+ protocol HTTPSessionTask {
+     func resume()
+ }
+
 class URLSessionHTTPClient {
-    var session: URLSession
+    var session: HTTPSession
     
-    init(session: URLSession) {
+    init(session: HTTPSession) {
         self.session = session
     }
     
@@ -62,19 +70,19 @@ final class URLSessionHTTPClientTests: XCTestCase {
 
 // MARK: - Spy
 private extension URLSessionHTTPClientTests {
-    class URLSessionSpy: URLSession {
+    class URLSessionSpy: HTTPSession {
         private var stubs = [URL: Stub]()
         
         struct Stub {
-            var task: URLSessionDataTask
+            var task: HTTPSessionTask
             var error: Error?
         }
         
-        func stub(url: URL, task: URLSessionDataTask = FakeURLSessionDataTask(), error: Error? = nil) {
+        func stub(url: URL, task: HTTPSessionTask = FakeURLSessionDataTask(), error: Error? = nil) {
             stubs[url] = Stub(task: task, error: error)
         }
         
-        override func dataTask(with url: URL, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) -> URLSessionDataTask {
+        func dataTask(with url: URL, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) -> HTTPSessionTask {
             guard let stub = stubs[url] else {
                 fatalError("Where is the Stub")
             }
@@ -84,19 +92,18 @@ private extension URLSessionHTTPClientTests {
         }
     }
     
-    // Mocking classes you don't own...
-    class FakeURLSessionDataTask: URLSessionDataTask {
-        override func resume() { }
+    class FakeURLSessionDataTask: HTTPSessionTask {
+        func resume() { }
     }
     
-    class URLSessionDataTaskSpy: URLSessionDataTask {
+    class URLSessionDataTaskSpy: HTTPSessionTask {
         enum Method {
             case resume
         }
         
         var messages: [Method] = []
         
-        override func resume() {
+        func resume() {
             messages.append(.resume)
         }
     }
