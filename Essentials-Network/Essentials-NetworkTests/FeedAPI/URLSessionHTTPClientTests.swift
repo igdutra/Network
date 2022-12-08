@@ -16,7 +16,7 @@ class URLSessionHTTPClient {
     }
     
     func get(from url: URL, completion: @escaping (HTTPClientResult) -> Void) {
-        session.dataTask(with: url) { _, _, _ in }
+        session.dataTask(with: url) { _, _, _ in }.resume()
     }
 }
 
@@ -32,19 +32,51 @@ final class URLSessionHTTPClientTests: XCTestCase {
         
         XCTAssertEqual(session.receivedURLs, [anyURl])
     }
+    
+    func test_getFromURL_resumesDataTaskWithURL() {
+        let anyURl = anyURL()
+        let session = URLSessionSpy()
+        let dataTaskSpy = URLSessionDataTaskSpy()
+        session.stub(url: anyURl, task: dataTaskSpy)
+        let sut = URLSessionHTTPClient(session: session)
+        
+        sut.get(from: anyURl) { _ in }
+        
+        XCTAssertEqual(dataTaskSpy.messages, [.resume])
+    }
 }
 
 // MARK: - Spy
 private extension URLSessionHTTPClientTests {
     class URLSessionSpy: URLSession {
         var receivedURLs: [URL] = []
+        private var stubs = [URL: URLSessionDataTask]()
+        
+        func stub(url: URL, task: URLSessionDataTask) {
+            stubs[url] = task
+        }
         
         override func dataTask(with url: URL, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) -> URLSessionDataTask {
             receivedURLs.append(url)
-            return FakeURLSessionDataTask()
+            return stubs[url] ?? FakeURLSessionDataTask()
+        }
+    }
+    
+    // Mocking classes you don't own...
+    class FakeURLSessionDataTask: URLSessionDataTask {
+        override func resume() { }
+    }
+    
+    class URLSessionDataTaskSpy: URLSessionDataTask {
+        enum Method {
+            case resume
         }
         
-        class FakeURLSessionDataTask: URLSessionDataTask { }
+        var messages: [Method] = []
+        
+        override func resume() {
+            messages.append(.resume)
+        }
     }
 }
 
