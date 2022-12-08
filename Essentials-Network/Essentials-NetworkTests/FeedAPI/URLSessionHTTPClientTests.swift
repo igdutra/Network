@@ -54,14 +54,13 @@ final class URLSessionHTTPClientTests: XCTestCase {
     }
     
     func test_getFromURL_deliversError() {
-        let anyURl = anyURL()
         let anyError = anyError()
         URLProtocolStub.stub(data: nil, response: nil, error: anyError)
         let sut = makeSUT()
         
         let exp = expectation(description: "Wait")
         
-        sut.get(from: anyURl) { result in
+        sut.get(from: anyURL()) { result in
             switch result {
             case .failure(let receivedError as NSError):
                 XCTAssertEqual(receivedError.domain, anyError.domain)
