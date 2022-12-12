@@ -8,7 +8,7 @@
 import XCTest
 import Essentials_Network
 
-class URLSessionHTTPClient {
+class URLSessionHTTPClient: HTTPClient {
     var session: URLSession
     
     init(session: URLSession = .shared) {
@@ -172,7 +172,7 @@ private extension URLSessionHTTPClientTests {
 private extension URLSessionHTTPClientTests {
     
     // MARK: Factories
-    func makeSUT(file: StaticString = #file, line: UInt = #line) -> URLSessionHTTPClient {
+    func makeSUT(file: StaticString = #file, line: UInt = #line) -> HTTPClient {
         let sut = URLSessionHTTPClient()
         
         trackForMemoryLeaks(sut, file: file, line: line)
@@ -203,6 +203,14 @@ private extension URLSessionHTTPClientTests {
     }
     
     // MARK: Helpers
+    
+    /*
+     So First there was only one helper, resultErrorFor
+     then there was the resultValues for
+     
+     then saw the duplication code between the helpers, and then refactored it to use just one thing.
+     */
+    
     func resultValuesFor(data: Data?, response: URLResponse?, error: Error? = nil, file: StaticString = #file, line: UInt = #line) -> (data: Data, response: HTTPURLResponse?)? {
         let result = resultFor(data: data, response: response, error: error)
         
