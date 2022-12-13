@@ -25,7 +25,6 @@ final class URLSessionHTTPClientTests: XCTestCase {
         let sut = makeSUT()
         
         let exp = expectation(description: "Wait for request")
-        exp.expectedFulfillmentCount = 2
         
         URLProtocolStub.observeRequests { request in
             XCTAssertEqual(request.url, anyURL)
@@ -33,7 +32,7 @@ final class URLSessionHTTPClientTests: XCTestCase {
             exp.fulfill()
         }
         
-        sut.get(from: anyURL) { _ in exp.fulfill() }
+        sut.get(from: anyURL) { _ in }
         
         wait(for: [exp], timeout: 1.0)
     }
@@ -118,7 +117,6 @@ private extension URLSessionHTTPClientTests {
         // MARK: Abstract Class Methods
         
         override class func canInit(with request: URLRequest) -> Bool {
-            requestObserver?(request)
             return true
         }
         
@@ -128,6 +126,12 @@ private extension URLSessionHTTPClientTests {
         
         // The startLoading() method will be called when we need to do our loading, and is where we’ll return some test data immediately.
         override func startLoading() {
+            // When the 2nd test start running, case there is already a closure set, finish the request before starting a new one
+            if let requestObserver = URLProtocolStub.requestObserver {
+                client?.urlProtocolDidFinishLoading(self)
+                return requestObserver(request)
+            }
+            
             if let data = URLProtocolStub.stub?.data {
                 client?.urlProtocol(self, didLoad: data)
             }
